@@ -18,6 +18,7 @@ from .quantum_machine_learning import (
     QuantumReinforcementLearning,
     QuantumAnomalyDetection
 )
+from .quantum_ai_security_guardian import QuantumAISecurityGuardian
 
 __all__ = [
     'QuantumResistantCrypto',
@@ -25,6 +26,7 @@ __all__ = [
     'QuantumNeuralNetwork',
     'QuantumReinforcementLearning',
     'QuantumAnomalyDetection',
+    'QuantumAISecurityGuardian',
     'QUANTUM_SECURITY_LEVEL_1',
     'QUANTUM_SECURITY_LEVEL_2',
     'QUANTUM_SECURITY_LEVEL_3'

@@ -14,7 +14,7 @@ class LegacySystemAdapter:
 
 # Example usage
 if __name__ == "__main__":
-    adapter = LegacySystemAdapter('https://legacy-system-url/api')
+    adapter = LegacySystemAdapter('https://api.github.com')
     data = adapter.fetch_data('data-endpoint')
     print(f"Fetched Data: {data}")
     status, response = adapter.send_data('data-endpoint', {'key': 'value'})

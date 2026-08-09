@@ -15,5 +15,5 @@ class CrossChainCommunication:
 
 # Example usage
 if __name__ == "__main__":
-    communication = CrossChainCommunication('https://chain-a-url', 'https://chain-b-url')
+    communication = CrossChainCommunication('https://cloudflare-eth.com', 'https://polygon-rpc.com')
     # Example calls to send and receive messages would go here
