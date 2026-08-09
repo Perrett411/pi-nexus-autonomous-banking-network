@@ -15,7 +15,7 @@ const axios = require('axios');
 class NexusBridge {
     constructor(config = {}) {
         this.primaryWsUrl = config.primaryWsUrl || 'wss://ws.postman-echo.com/raw';
-        this.cryptoWsUrl = config.cryptoWsUrl || 'wss://ws.postman-echo.com/raw';
+        this.cryptoWsUrl = config.cryptoWsUrl || 'wss://echo.websocket.org';
         
         this.primaryHttpUrl = config.primaryHttpUrl || 'https://postman-echo.com/get';
         this.cryptoHttpUrl = config.cryptoHttpUrl || 'https://postman-echo.com/post';

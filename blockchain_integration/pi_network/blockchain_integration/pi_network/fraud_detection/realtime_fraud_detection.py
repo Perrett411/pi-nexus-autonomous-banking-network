@@ -14,7 +14,7 @@ class RealtimeFraudDetection:
                 data = await websocket.recv()
                 df = self.spark_session.createDataFrame(data)
                 # Perform real-time fraud detection using machine learning and streaming data
-                result = df.groupBy('transaction_id').agg({'amount': 'um'}).collect()
+                result = df.groupBy('transaction_id').agg({'amount': 'sum'}).collect()
                 print(result)
 
 # Example usage:

@@ -14,7 +14,7 @@ class RealtimeRiskManagement:
                 data = await websocket.recv()
                 df = self.spark_session.createDataFrame(data)
                 # Perform real-time risk management using machine learning and streaming data
-                result = df.groupBy('symbol').agg({'price': 'um'}).collect()
+                result = df.groupBy('symbol').agg({'price': 'sum'}).collect()
                 print(result)
 
 # Example usage:

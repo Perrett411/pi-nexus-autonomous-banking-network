@@ -14,7 +14,7 @@ class RealtimePortfolioManagement:
                 data = await websocket.recv()
                 df = self.spark_session.createDataFrame(data)
                 # Perform real-time portfolio management using machine learning and streaming data
-                result = df.groupBy('portfolio_id').agg({'value': 'um'}).collect()
+                result = df.groupBy('portfolio_id').agg({'value': 'sum'}).collect()
                 print(result)
 
 # Example usage:
