@@ -271,13 +271,13 @@ class NexusBridge {
             const primaryResponse = await axios.get(this.primaryHttpUrl, { timeout: 3000 });
             if (primaryResponse.data && primaryResponse.data.updates) {
                 const updates = primaryResponse.data.updates;
-                console.log(`[NexusBridge REST] Pulled ${updates.length} updates from Primary. Syncing with Crypto...`);
-                for (const update of updates) {
-                    await axios.post(this.cryptoHttpUrl, update, { timeout: 3000 });
-                }
+                console.log(`[NexusBridge REST] Pulled ${updates.length} updates from Primary. Syncing with Crypto in parallel...`);
+                await Promise.all(updates.map(update => 
+                    axios.post(this.cryptoHttpUrl, update, { timeout: 3000 })
+                ));
             }
         } catch (err) {
-            console.warn('[NexusBridge REST] Primary -> Crypto HTTP Sync skipped:', err.message);
+            console.warn('[NexusBridge REST] Primary -> Crypto HTTP Sync skipped or failed:', err.message);
         }
 
         // Step 2: Pull from Crypto, Push to Primary
@@ -285,13 +285,13 @@ class NexusBridge {
             const cryptoResponse = await axios.get(this.cryptoHttpUrl, { timeout: 3000 });
             if (cryptoResponse.data && cryptoResponse.data.updates) {
                 const updates = cryptoResponse.data.updates;
-                console.log(`[NexusBridge REST] Pulled ${updates.length} updates from Crypto. Syncing with Primary...`);
-                for (const update of updates) {
-                    await axios.post(this.primaryHttpUrl, update, { timeout: 3000 });
-                }
+                console.log(`[NexusBridge REST] Pulled ${updates.length} updates from Crypto. Syncing with Primary in parallel...`);
+                await Promise.all(updates.map(update => 
+                    axios.post(this.primaryHttpUrl, update, { timeout: 3000 })
+                ));
             }
         } catch (err) {
-            console.warn('[NexusBridge REST] Crypto -> Primary HTTP Sync skipped:', err.message);
+            console.warn('[NexusBridge REST] Crypto -> Primary HTTP Sync skipped or failed:', err.message);
         }
     }
 

@@ -67,7 +67,7 @@ describe('NexusBridge Real-time Data Sync', () => {
         bridge = new NexusBridge({
             primaryWsUrl: 'ws://localhost:8081',
             cryptoWsUrl: 'ws://localhost:8082',
-            heartbeatInterval: 100000, // Large to avoid interferes
+            heartbeatInterval: 100000, // Large to avoid interference
             fallbackPollInterval: 100000
         });
 
