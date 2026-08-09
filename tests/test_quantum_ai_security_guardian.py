@@ -179,6 +179,61 @@ class TestQuantumAISecurityGuardian(unittest.TestCase):
         ledger = self.guardian.get_blockchain_ledger()
         self.assertEqual(ledger[-1]["action_type"], "settlement_rejection")
 
+    def test_default_branches_connected(self):
+        """Test that default branches are connected and verified on QCF-DRIVE."""
+        connected_branches = self.guardian.get_connected_branches()
+        self.assertIn("North_America_Branch", connected_branches)
+        self.assertIn("Europe_Branch", connected_branches)
+        self.assertEqual(connected_branches["North_America_Branch"]["status"], "connected")
+        self.assertTrue(connected_branches["North_America_Branch"]["quantum_secured"])
+
+    def test_connect_and_disconnect_branch(self):
+        """Test dynamic connection and disconnection of branches on QCF-DRIVE."""
+        branch_id = "Africa_Regional_Hub"
+        success = self.guardian.connect_branch_to_qcf_drive(branch_id)
+        self.assertTrue(success)
+        self.assertIn(branch_id, self.guardian.get_connected_branches())
+        
+        # Disconnect
+        success_disconnect = self.guardian.disconnect_branch_from_qcf_drive(branch_id)
+        self.assertTrue(success_disconnect)
+        self.assertNotIn(branch_id, self.guardian.get_connected_branches())
+
+    def test_settlement_with_connected_branch(self):
+        """Test that a transaction routing through a connected branch passes QCF-DRIVE check."""
+        metadata = {
+            "sca_completed": True,
+            "gdpr_consent": True,
+            "kyc_verified": True,
+            "branch_id": "North_America_Branch"
+        }
+        settlement_report = self.guardian.secure_and_process_settlement(
+            sender="sender@pinexus.com",
+            recipient="recipient@pinexus.com",
+            amount=200.00,
+            currency="USD",
+            metadata=metadata
+        )
+        self.assertEqual(settlement_report["status"], "completed")
+
+    def test_settlement_with_disconnected_or_missing_branch(self):
+        """Test that a transaction routing through a disconnected or missing branch gets rejected."""
+        metadata = {
+            "sca_completed": True,
+            "gdpr_consent": True,
+            "kyc_verified": True,
+            "branch_id": "Unregistered_Branch_XYZ"
+        }
+        settlement_report = self.guardian.secure_and_process_settlement(
+            sender="sender@pinexus.com",
+            recipient="recipient@pinexus.com",
+            amount=200.00,
+            currency="USD",
+            metadata=metadata
+        )
+        self.assertEqual(settlement_report["status"], "rejected")
+        self.assertIn("not connected or active on QCF-DRIVE", settlement_report["reason"])
+
 
 if __name__ == "__main__":
     unittest.main()

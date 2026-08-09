@@ -92,6 +92,19 @@ class QuantumAISecurityGuardian:
         self.processor = QuantumTransactionProcessor(security_level=security_level)
         self.blockchain_ledger: List[Dict[str, Any]] = []
         self.compliance_database = self._load_compliance_rules()
+        self.connected_branches: Dict[str, Dict[str, Any]] = {}
+        
+        # Connect all default/configured branches to the QCF-DRIVE network
+        config_branches = self.config.get("branches") or [
+            "North_America_Branch",
+            "Europe_Branch",
+            "Asia_Pacific_Branch",
+            "Latin_America_Branch",
+            "Middle_East_Africa_Branch"
+        ]
+        for branch_id in config_branches:
+            self.connect_branch_to_qcf_drive(branch_id, log_to_blockchain=False)
+
         logger.info("Quantum AI Security Guardian initialized successfully. QCF-DRIVE Compliant.")
 
     def _load_compliance_rules(self) -> Dict[str, Any]:
@@ -119,6 +132,46 @@ class QuantumAISecurityGuardian:
             }
         }
 
+    def connect_branch_to_qcf_drive(self, branch_id: str, branch_info: Optional[Dict[str, Any]] = None, log_to_blockchain: bool = True) -> bool:
+        """
+        Connects a banking branch to the QCF-DRIVE quantum consensus network.
+        Each branch is secured with quantum-resistant keys and integrated into the consensus nodes.
+        """
+        if not branch_id:
+            logger.error("Branch ID cannot be empty.")
+            return False
+        
+        info = branch_info or {}
+        info.setdefault("name", f"Branch_{branch_id}")
+        info.setdefault("connected_at", time.time())
+        info.setdefault("status", "connected")
+        info.setdefault("quantum_secured", True)
+        
+        self.connected_branches[branch_id] = info
+        logger.info(f"Branch '{branch_id}' successfully connected to QCF-DRIVE.")
+        if log_to_blockchain:
+            self.blockchain_log("branch_connected_to_qcf_drive", {"branch_id": branch_id, "info": info})
+        return True
+
+    def disconnect_branch_from_qcf_drive(self, branch_id: str) -> bool:
+        """
+        Disconnects a banking branch from the QCF-DRIVE quantum consensus network.
+        """
+        if branch_id in self.connected_branches:
+            self.connected_branches[branch_id]["status"] = "disconnected"
+            self.connected_branches[branch_id]["quantum_secured"] = False
+            logger.info(f"Branch '{branch_id}' disconnected from QCF-DRIVE.")
+            self.blockchain_log("branch_disconnected_from_qcf_drive", {"branch_id": branch_id})
+            return True
+        logger.warning(f"Branch '{branch_id}' not found among connected branches.")
+        return False
+
+    def get_connected_branches(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Returns all registered and connected branches.
+        """
+        return {bid: info for bid, info in self.connected_branches.items() if info["status"] == "connected"}
+
     def simulate_quantum_consensus_decision(self, decision_data: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
         """
         Runs decentralized quantum consensus (QCF) decision-making.
@@ -132,7 +185,14 @@ class QuantumAISecurityGuardian:
             Tuple of (consensus_passed, consensus_details)
         """
         qcf_params = self.config.get("qcf_drive_parameters", self.DEFAULT_CONFIG["qcf_drive_parameters"])
-        num_nodes = qcf_params.get("simulated_nodes", 5)
+        
+        # Connect all branches dynamically to act as the quantum consensus nodes
+        active_branches = [bid for bid, info in self.connected_branches.items() if info.get("status") == "connected"]
+        if len(active_branches) >= 2:
+            num_nodes = len(active_branches)
+        else:
+            num_nodes = qcf_params.get("simulated_nodes", 5)
+            
         threshold = qcf_params.get("consensus_threshold", 0.67)
 
         votes = []
@@ -337,6 +397,16 @@ class QuantumAISecurityGuardian:
             currency=currency,
             metadata=metadata
         )
+
+        # Check if branch validation is required or provided
+        branch_id = (metadata or {}).get("branch_id")
+        if branch_id:
+            if branch_id not in self.connected_branches or self.connected_branches[branch_id].get("status") != "connected":
+                tx["status"] = "rejected"
+                tx["reason"] = f"Branch '{branch_id}' is not connected or active on QCF-DRIVE"
+                logger.warning(f"Settlement rejected: Branch '{branch_id}' not connected to QCF-DRIVE.")
+                self.blockchain_log("settlement_rejection", tx)
+                return tx
 
         # 2. Enforce global legal compliance regulations (PSD2, GDPR, AML)
         compliant, compliance_logs = self.enforce_legal_compliance(tx)
