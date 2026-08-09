@@ -158,8 +158,7 @@ class QuantumAISecurityGuardian:
         Disconnects a banking branch from the QCF-DRIVE quantum consensus network.
         """
         if branch_id in self.connected_branches:
-            self.connected_branches[branch_id]["status"] = "disconnected"
-            self.connected_branches[branch_id]["quantum_secured"] = False
+            del self.connected_branches[branch_id]
             logger.info(f"Branch '{branch_id}' disconnected from QCF-DRIVE.")
             self.blockchain_log("branch_disconnected_from_qcf_drive", {"branch_id": branch_id})
             return True
@@ -170,7 +169,7 @@ class QuantumAISecurityGuardian:
         """
         Returns all registered and connected branches.
         """
-        return {bid: info for bid, info in self.connected_branches.items() if info["status"] == "connected"}
+        return self.connected_branches.copy()
 
     def simulate_quantum_consensus_decision(self, decision_data: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
         """
