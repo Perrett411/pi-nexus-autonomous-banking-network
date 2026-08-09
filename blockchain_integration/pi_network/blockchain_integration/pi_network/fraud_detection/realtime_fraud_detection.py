@@ -18,7 +18,7 @@ class RealtimeFraudDetection:
                 print(result)
 
 # Example usage:
-market_data_url = 'wss://market-data-feed.com'
+market_data_url = 'wss://stream.binance.com:9443/ws/btcusdt@ticker'
 spark_session = SparkSession.builder.appName('PI-Nexus Realtime Fraud Detection').getOrCreate()
 realtime_fraud_detection = RealtimeFraudDetection(market_data_url, spark_session)
 asyncio.get_event_loop().run_until_complete(realtime_fraud_detection.get_realtime_data())

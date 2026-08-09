@@ -10,6 +10,6 @@ class OracleIntegration:
 
 # Example usage
 if __name__ == "__main__":
-    oracle = OracleIntegration('https://oracle-url/api')
+    oracle = OracleIntegration('https://api.github.com')
     price = oracle.get_price('ETH')
     print(f"Current ETH Price: {price['price']}")

@@ -2,8 +2,8 @@
  * nexusBridge.js
  * 
  * Establishes real-time, bidirectional data synchronization between:
- * - https://nexus-x-aibank.com (Primary AI Bank Network)
- * - https://nexus-x-aibank-crypto.base44.app (Crypto AI Bank Network)
+ * - https://postman-echo.com (Primary AI Bank Network Mock Gateway)
+ * - https://ws.postman-echo.com (Crypto AI Bank Network Mock Gateway)
  * 
  * Supports robust connection management, heartbeats, message queuing/buffering, 
  * exponential backoff reconnection, and REST-based fallback synchronization.
@@ -14,11 +14,11 @@ const axios = require('axios');
 
 class NexusBridge {
     constructor(config = {}) {
-        this.primaryWsUrl = config.primaryWsUrl || 'wss://nexus-x-aibank.com/ws';
-        this.cryptoWsUrl = config.cryptoWsUrl || 'wss://nexus-x-aibank-crypto.base44.app/ws';
+        this.primaryWsUrl = config.primaryWsUrl || 'wss://ws.postman-echo.com/raw';
+        this.cryptoWsUrl = config.cryptoWsUrl || 'wss://ws.postman-echo.com/raw';
         
-        this.primaryHttpUrl = config.primaryHttpUrl || 'https://nexus-x-aibank.com/api/sync';
-        this.cryptoHttpUrl = config.cryptoHttpUrl || 'https://nexus-x-aibank-crypto.base44.app/api/sync';
+        this.primaryHttpUrl = config.primaryHttpUrl || 'https://postman-echo.com/get';
+        this.cryptoHttpUrl = config.cryptoHttpUrl || 'https://postman-echo.com/post';
 
         this.primaryWs = null;
         this.cryptoWs = null;

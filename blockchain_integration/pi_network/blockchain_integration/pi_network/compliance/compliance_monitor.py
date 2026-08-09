@@ -9,7 +9,7 @@ class ComplianceMonitor:
         return response.json()
 
 # Example usage:
-regulatory_api = 'https://regulatory-api.com'
+regulatory_api = 'https://api.github.com/'
 compliance_monitor = ComplianceMonitor(regulatory_api)
 transaction_data = {'amount': 100, 'category': 'withdrawal'}
 result = compliance_monitor.monitor_compliance(transaction_data)

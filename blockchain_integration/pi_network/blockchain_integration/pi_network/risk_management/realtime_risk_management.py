@@ -18,7 +18,7 @@ class RealtimeRiskManagement:
                 print(result)
 
 # Example usage:
-market_data_url = 'wss://market-data-feed.com'
+market_data_url = 'wss://stream.binance.com:9443/ws/btcusdt@ticker'
 spark_session = SparkSession.builder.appName('PI-Nexus Realtime Risk Management').getOrCreate()
 realtime_risk_manager = RealtimeRiskManagement(market_data_url, spark_session)
 asyncio.get_event_loop().run_until_complete(realtime_risk_manager.get_realtime_data())
