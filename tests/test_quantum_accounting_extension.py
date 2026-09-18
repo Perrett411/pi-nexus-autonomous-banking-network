@@ -182,6 +182,29 @@ class TestQuantumAccountingExtension(unittest.TestCase):
         self.assertIn("Sage", recon_report_2["discrepancies"][0]["missing_platforms"])
         self.assertIn("QuickBooks", recon_report_2["discrepancies"][0]["missing_platforms"])
 
+    def test_generate_escrow_and_quarterly_reports(self):
+        """Test generation of Escrow and Quarterly reports."""
+        escrow_rep = self.accounting.generate_escrow_report()
+        self.assertEqual(escrow_rep["report_type"], "Escrow Report")
+        self.assertIn("acc_regtech_escrow", escrow_rep["escrow_balances"])
+        self.assertEqual(escrow_rep["total_escrow_funds"], 20000000.0)
+
+        quarterly_rep = self.accounting.generate_quarterly_report()
+        self.assertEqual(quarterly_rep["report_type"], "Quarterly Report")
+        self.assertIn("Superior Regulation Technology LLC", quarterly_rep["company_holdings"])
+
+    def test_setup_stripe_apps_upload_sync(self):
+        """Test Stripe apps upload sync triggers successfully on Mondays."""
+        sync_res = self.accounting.setup_stripe_apps_upload_sync(day_of_week="Monday")
+        self.assertEqual(sync_res["status"], "success")
+        self.assertEqual(sync_res["stripe_apps_folder"], "stripe_apps_upload")
+        self.assertEqual(len(sync_res["uploads"]), 2)
+        
+        # Verify files are stored in Google Drive mock under stripe_apps_upload folder
+        escrow_file_name = sync_res["uploads"][0]["filename"]
+        self.assertIn(escrow_file_name, self.accounting.google_drive_files)
+
 
 if __name__ == "__main__":
     unittest.main()
+
