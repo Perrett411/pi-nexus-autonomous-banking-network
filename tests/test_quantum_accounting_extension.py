@@ -204,7 +204,36 @@ class TestQuantumAccountingExtension(unittest.TestCase):
         escrow_file_name = sync_res["uploads"][0]["filename"]
         self.assertIn(escrow_file_name, self.accounting.google_drive_files)
 
+    def test_check_network_commands(self):
+        """Test scanning network commands for safety and forbidden keywords."""
+        cmds = ["start_node", "transmit_funds", "eval(dangerous_code)", "sudo reboot"]
+        res = self.accounting.check_network_commands(cmds)
+        self.assertFalse(res["all_secure"])
+        self.assertEqual(res["checked_commands"][2]["status"], "exposed")
+        self.assertEqual(res["checked_commands"][3]["status"], "exposed")
+        self.assertEqual(res["checked_commands"][0]["status"], "secure")
+
+    def test_recheck_all_requests(self):
+        """Test rechecking all compliance and transaction requests."""
+        reqs = [
+            {"request_id": "req-1", "amount": 100.0},
+            {"request_id": "req-2", "amount": -50.0}
+        ]
+        res = self.accounting.recheck_all_requests(reqs)
+        self.assertFalse(res["all_valid"])
+        self.assertEqual(res["rechecked_requests"][0]["rechecked_status"], "verified")
+        self.assertEqual(res["rechecked_requests"][1]["rechecked_status"], "rejected")
+
+    def test_revaluate_portfolio(self):
+        """Test revaluation of investment portfolios."""
+        res = self.accounting.revaluate_portfolio()
+        self.assertIn("Perrett and Associates Private Investment Firm LLC", res["portfolio_valuation"])
+        self.assertIn("Superior Regulation Technology LLC", res["portfolio_valuation"])
+        self.assertEqual(res["portfolio_valuation"]["Superior Regulation Technology LLC"]["status"], "revalued_successfully")
+        self.assertTrue(res["portfolio_valuation"]["Superior Regulation Technology LLC"]["revalued_assets"] > 0)
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

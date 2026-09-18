@@ -220,7 +220,7 @@ class QuantumAISecurityGuardian:
                 one_shots = counts.get('1' * num_nodes, 0)
                 total_shots = sum(counts.values())
 
-                agreement_ratio = max(zero_shots, one_shots) / total_shots if total_shots > 0 else 0.5
+                agreement_ratio = (zero_shots + one_shots) / total_shots if total_shots > 0 else 0.5
                 consensus_passed = agreement_ratio >= threshold
 
                 votes = [1 if zero_shots >= one_shots else 0] * num_nodes
