@@ -6,8 +6,8 @@ class SmartContract {
 
   async mapAccountToWallet(accountAddress, walletAddress) {
     const web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/YOUR_PROJECT_ID'));
-    const contractAddress = '0x...YOUR_CONTRACT_ADDRESS...';
-    const contractABI = [...YOUR_CONTRACT_ABI...];
+    const contractAddress = '0x0000000000000000000000000000000000000000';
+    const contractABI = [];
 
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     const txCount = await web3.eth.getTransactionCount(walletAddress);
@@ -21,7 +21,7 @@ class SmartContract {
       gasPrice: web3.utils.toWei('20', 'gwei'),
     };
 
-    const signedTx = await web3.eth.accounts.signTransaction(tx, '0x...YOUR_PRIVATE_KEY...');
+    const signedTx = await web3.eth.accounts.signTransaction(tx, '0x0000000000000000000000000000000000000000000000000000000000000000');
     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
     return receipt;

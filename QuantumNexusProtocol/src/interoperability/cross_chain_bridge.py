@@ -23,5 +23,5 @@ class CrossChainBridge:
 
 # Example usage
 if __name__ == "__main__":
-    bridge = CrossChainBridge('https://source-chain-url', 'https://target-chain-url')
+    bridge = CrossChainBridge('https://cloudflare-eth.com', 'https://polygon-rpc.com')
     bridge.transfer_tokens(token_address='0xTokenAddress', amount=100, target_address='0xTargetAddress')

@@ -13,6 +13,6 @@ class MarketDataFeed:
                 print(data)
 
 # Example usage:
-market_data_url = 'wss://market-data-feed.com'
+market_data_url = 'wss://stream.binance.com:9443/ws/btcusdt@ticker'
 market_data_feed = MarketDataFeed(market_data_url)
 asyncio.get_event_loop().run_until_complete(market_data_feed.get_realtime_data())

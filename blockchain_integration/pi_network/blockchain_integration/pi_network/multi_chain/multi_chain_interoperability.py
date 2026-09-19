@@ -13,8 +13,8 @@ class MultiChainInteroperability:
         return response.json()
 
 # Example usage:
-chain1_rpc = 'https://chain1-rpc.com'
-chain2_rpc = 'https://chain2-rpc.com'
+chain1_rpc = 'https://cloudflare-eth.com'
+chain2_rpc = 'https://polygon-rpc.com'
 interoperability = MultiChainInteroperability(chain1_rpc, chain2_rpc)
 asset_id = 'PI-Nexus-Token'
 amount = 100

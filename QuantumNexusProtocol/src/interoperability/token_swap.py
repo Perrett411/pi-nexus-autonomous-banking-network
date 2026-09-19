@@ -17,7 +17,7 @@ class TokenSwap:
 
 # Example usage
 if __name__ == "__main__":
-    web3 = Web3(Web3.HTTPProvider('https://chain-url'))
+    web3 = Web3(Web3.HTTPProvider('https://cloudflare-eth.com'))
     swap = TokenSwap(web3, '0xRouterAddress')
     receipt = swap.swap_tokens(amount_in=100, amount_out_min=90, path=['0xTokenA', '0xTokenB'], to='0xRecipient', deadline=1234567890)
     print(f"Swap Transaction Receipt: {receipt}")

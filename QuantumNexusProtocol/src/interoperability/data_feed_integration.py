@@ -10,6 +10,6 @@ class DataFeedIntegration:
 
 # Example usage
 if __name__ == "__main__":
-    data_feed = DataFeedIntegration('https://data-feed-url/api')
+    data_feed = DataFeedIntegration('https://api.github.com/')
     feed_data = data_feed.fetch_feed()
     print(f"Fetched Feed Data: {feed_data}")

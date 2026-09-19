@@ -31,6 +31,10 @@ app.get('/get-balance', async (req, res) => {
   res.json({ balance });
 });
 
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
-});
+module.exports = app;
+
+if (require.main === module) {
+  app.listen(3000, () => {
+    console.log('Server listening on port 3000');
+  });
+}

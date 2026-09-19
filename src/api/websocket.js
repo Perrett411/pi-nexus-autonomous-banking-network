@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const NexusBridge = require('./nexusBridge');
 
 const wss = new WebSocket.Server({ port: 8080 });
 
@@ -22,6 +23,10 @@ const start = () => {
     });
 
     console.log('WebSocket server is running on ws://localhost:8080');
+
+    // Instantiate and start the real-time bidirectional data channel bridge
+    const nexusBridge = new NexusBridge();
+    nexusBridge.start();
 };
 
 module.exports = { start };

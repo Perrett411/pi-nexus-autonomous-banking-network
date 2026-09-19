@@ -15,5 +15,5 @@ class SidechainIntegration:
 
 # Example usage
 if __name__ == "__main__":
-    sidechain = SidechainIntegration('https://main-chain-url', 'https://side-chain-url')
+    sidechain = SidechainIntegration('https://cloudflare-eth.com', 'https://polygon-rpc.com')
     # Example calls to transfer methods would go here
