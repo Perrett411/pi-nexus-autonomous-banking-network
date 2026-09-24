@@ -3,27 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blockchain Dashboard</title>
+    <title>Quantum Function Drive — Live Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Blockchain Dashboard</h1>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="wallet.html">Wallet</a></li>
-                <li><a href="transaction_history.html">Transaction History</a></li>
-                <li><a href="settings.html">Settings</a></li>
-                <li><a href="decentralized_applications.html">DApps</a></li>
-                <li><a href="gaming_interface.html">Gaming</a></li>
-            </ul>
-        </nav>
+        <h1>Quantum Function Drive</h1>
+        <div class="live-badge">
+            <span class="dot" id="live-dot"></span>
+            <span id="live-status">CONNECTING</span>
+        </div>
     </header>
     <main>
-        <h2>Welcome to the Blockchain Dashboard</h2>
-        <p>Your gateway to decentralized finance and applications.</p>
+        <section class="stats-grid" aria-label="Drive statistics">
+            <div class="stat-card">
+                <span class="stat-label">Transactions</span>
+                <span class="stat-value" id="stat-transactions">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Consensus Updates</span>
+                <span class="stat-value" id="stat-consensus">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Validators</span>
+                <span class="stat-value" id="stat-validators">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Blocks Finalized</span>
+                <span class="stat-value" id="stat-blocks">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Audit Chain</span>
+                <span class="stat-value ok" id="stat-integrity">…</span>
+            </div>
+            <div class="stat-card wide">
+                <span class="stat-label">Audit Merkle Root</span>
+                <span class="stat-value mono" id="stat-merkle">…</span>
+            </div>
+        </section>
+
+        <section class="feeds">
+            <div class="feed-panel">
+                <h2>Transaction Stream</h2>
+                <div id="transactions-feed" class="feed" aria-live="polite"></div>
+            </div>
+            <div class="feed-panel">
+                <h2>Consensus Updates</h2>
+                <div id="consensus-feed" class="feed" aria-live="polite"></div>
+            </div>
+        </section>
     </main>
+    <footer>
+        <p>Every transaction and consensus change is hash-chained in the Quantum Nexus audit log.</p>
+    </footer>
     <script src="app.js"></script>
 </body>
 </html>
