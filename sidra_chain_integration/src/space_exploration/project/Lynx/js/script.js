@@ -11,10 +11,12 @@ form.addEventListener('submit', async (e) => {
     });
     const threats = await response.json();
     const threatsList = threats.threats;
-    const threatsHtml = threatsList.map((threat) => {
-        return `<p>Threat detected: ${threat}</p>`;
-    }).join('');
-    resultsDiv.innerHTML = threatsHtml;
+    resultsDiv.replaceChildren();
+    threatsList.forEach((threat) => {
+        const p = document.createElement('p');
+        p.textContent = `Threat detected: ${threat}`;
+        resultsDiv.appendChild(p);
+    });
 });
 
 // Add event listener to the clear button

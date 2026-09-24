@@ -40,12 +40,19 @@ async function renderMarketplace() {
   assets.forEach((asset) => {
     const assetCard = document.createElement('div');
     assetCard.className = 'asset-card';
-    assetCard.innerHTML = `
-      <img src="${asset.image}" alt="${asset.name}">
-      <h3>${asset.name}</h3>
-      <p>${asset.description}</p>
-      <button class="buy-btn">Buy</button>
-    `;
+    const img = document.createElement('img');
+    img.alt = asset.name;
+    if (/^https?:\/\//i.test(asset.image)) {
+      img.src = asset.image;
+    }
+    const h3 = document.createElement('h3');
+    h3.textContent = asset.name;
+    const p = document.createElement('p');
+    p.textContent = asset.description;
+    const buyBtn = document.createElement('button');
+    buyBtn.className = 'buy-btn';
+    buyBtn.textContent = 'Buy';
+    assetCard.append(img, h3, p, buyBtn);
     marketplaceGrid.appendChild(assetCard);
   });
 }
@@ -62,7 +69,7 @@ document.addEventListener('click', (event) => {
 async function initVRExperience() {
   const vrScene = document.querySelector('.vr-container');
   vrRenderer.methods.renderScene().call().then((scene) => {
-    vrScene.innerHTML = scene;
+    vrScene.textContent = scene;
   });
 }
 
