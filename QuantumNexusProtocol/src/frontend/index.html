@@ -42,6 +42,33 @@
             </div>
         </section>
 
+        <section class="analytics-panel" aria-label="Network analytics">
+            <h2>Network Analytics</h2>
+            <div class="analytics-grid">
+                <div class="chart-panel">
+                    <div class="chart-header">
+                        <span>Transactions per minute</span>
+                        <span id="anomaly-count" class="anomaly-count">…</span>
+                    </div>
+                    <div id="tx-chart" class="bar-chart" aria-label="Transactions per minute chart"></div>
+                </div>
+                <div class="anomaly-panel">
+                    <h3>Anomalies &amp; Spikes</h3>
+                    <div id="anomaly-list" class="anomaly-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reconcile-panel" aria-label="Consensus reconciliation report">
+            <div class="reconcile-head">
+                <h2>Consensus Reconciliation &amp; Compliance</h2>
+                <button id="run-reconcile" class="reconcile-btn" type="button">Reconcile now</button>
+            </div>
+            <div id="reconcile-report" class="reconcile-report">
+                <div class="report-pending">Running compliance pass…</div>
+            </div>
+        </section>
+
         <section class="feeds">
             <div class="feed-panel">
                 <h2>Transaction Stream</h2>
@@ -57,5 +84,6 @@
         <p>Every transaction and consensus change is hash-chained in the Quantum Nexus audit log.</p>
     </footer>
     <script src="app.js"></script>
+    <script src="analytics.js"></script>
 </body>
 </html>

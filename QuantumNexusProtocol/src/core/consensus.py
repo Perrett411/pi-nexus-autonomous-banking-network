@@ -2,6 +2,8 @@ import hashlib
 import time
 from collections import defaultdict
 
+from core.reconciliation import correct_transaction, inspect_transaction
+
 class Block:
     def __init__(self, index, previous_hash, transactions, timestamp=None):
         self.index = index
@@ -55,7 +57,47 @@ class ConsensusAlgorithm:
             return False
         return True
 
+    def correct_block_violations(self, block):
+        """Auto-correct transactional violations inside a proposed block.
+
+        The consensus function fixes fixable errors (invalid amounts,
+        missing fields) before finalization; every correction is audited
+        for transparency, and uncorrectable policy violations
+        (self-transfers) are flagged for review.
+        """
+        corrections = 0
+        for tx in block.transactions:
+            if not isinstance(tx, dict):
+                continue
+            violations = inspect_transaction(tx)
+            if not violations:
+                continue
+            fixable = [v for v in violations if v != 'SELF_TRANSFER']
+            if fixable:
+                original = dict(tx)
+                corrected, corrections_made = correct_transaction(tx)
+                tx.update(corrected)
+                corrections += len(corrections_made)
+                self._audit_consensus('TRANSACTION_CORRECTED', {
+                    'transaction_id': tx.get('id'),
+                    'corrections': corrections_made,
+                    'original': original,
+                    'corrected': corrected,
+                })
+            if 'SELF_TRANSFER' in violations:
+                self._audit_consensus('VIOLATION_FLAGGED', {
+                    'transaction_id': tx.get('id'),
+                    'violation': 'SELF_TRANSFER',
+                    'note': 'policy violation — manual review required',
+                })
+        if corrections:
+            block.hash = block.calculate_hash()
+        return corrections
+
     def finalize_block(self, block):
+        # Consensus auto-corrects transactional violations before
+        # finalizing, keeping every correction transparent in the audit log.
+        self.correct_block_violations(block)
         if self.validate_block(block):
             self.pending_transactions.append(block)
             self.reward_validators(block)

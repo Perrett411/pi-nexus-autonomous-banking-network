@@ -27,9 +27,29 @@ docker compose -f docker-compose.base44.yml up -d
   "quantum function drive") generates transactions and consensus events. It is
   deliberately started only in the reloader child
   (`WERKZEUG_RUN_MAIN == 'true'`) so it never runs twice.
+- `src/core/analytics.py` — `AuditAnalytics`: time-buckets the audit trail into
+  chart-ready series (per-minute transactions/consensus/volume) and detects
+  anomalies: transaction spikes (>2σ vs average, min 3 tx), amount outliers
+  (>3σ), invalid amounts, self-transfers, forks and slashing.
+- `src/core/reconciliation.py` — `QuantumReconciler` + `inspect_transaction`/
+  `correct_transaction`: scans the audit trail for transactional violations,
+  auto-corrects fixable ones (logged as `TRANSACTION_CORRECTED` for
+  transparency), flags self-transfers (`VIOLATION_FLAGGED` — not safely
+  auto-correctable), verifies finalized block state (hash + linkage) and
+  issues the compliance report. Repeat runs are idempotent — the audit log's
+  payload dedup absorbs identical correction records.
+- `ConsensusAlgorithm.finalize_block` auto-corrects transactional violations
+  in a block BEFORE validating/finalizing it (fixable errors corrected,
+  policy violations flagged). Block hash is recomputed after corrections.
 - API: `GET /api/events?after=<index>` returns audit stats plus entries after
   the given index (last 200 when `after=-1`). The dashboard polls this every
-  1.5s. All engine/audit access is guarded by `ENGINE_LOCK`.
+  1.5s. `GET /api/analytics` returns chart series + anomalies (polled every
+  6s). `GET|POST /api/reconciliation` runs a compliance pass and returns the
+  report; the drive thread also auto-reconciles every 20 ticks. All
+  engine/audit access is guarded by `ENGINE_LOCK`.
+- NOTE: the audit log deep-copies payloads on append — never hand it an
+  object you intend to mutate later (in-place mutation would break the
+  hash chain).
 - Frontend renders everything via `textContent`/`createElement` — never
   `innerHTML` (XSS policy for on-chain data; see security fixes in
   `coin/Eonix`, `smart_contracts`, AstralPlane).

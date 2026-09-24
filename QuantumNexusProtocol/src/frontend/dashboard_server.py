@@ -15,8 +15,10 @@ from flask import Flask, jsonify, request, send_from_directory
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from core.analytics import AuditAnalytics
 from core.audit_log import QuantumAuditLog
 from core.consensus import ConsensusAlgorithm
+from core.reconciliation import QuantumReconciler
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,6 +27,8 @@ app = Flask(__name__, static_folder=None)
 ENGINE_LOCK = threading.Lock()
 audit_log = QuantumAuditLog()
 engine = ConsensusAlgorithm(audit_log=audit_log)
+analytics = AuditAnalytics(audit_log)
+reconciler = QuantumReconciler(audit_log, engine)
 tx_pool = []  # transactions waiting to be proposed into a block
 
 PARTICIPANTS = ['alice', 'bob', 'carol', 'dave', 'eve', 'zara',
@@ -62,9 +66,13 @@ def _drive_tick():
 
 
 def _run_drive():
+    ticks = 0
     while True:
         with ENGINE_LOCK:
             _drive_tick()
+            ticks += 1
+            if ticks % 20 == 0:  # periodic compliance pass — auto-reconcile
+                reconciler.reconcile()
         time.sleep(random.uniform(1.0, 2.5))
 
 
@@ -108,6 +116,20 @@ def api_events():
         else:
             fresh = audit_log.entries[after + 1:]
     return jsonify({'stats': stats, 'total': total, 'entries': fresh})
+
+
+@app.route('/api/analytics')
+def api_analytics():
+    """Chart-ready audit series plus detected anomalies and spikes."""
+    with ENGINE_LOCK:
+        return jsonify(analytics.analyze())
+
+
+@app.route('/api/reconciliation', methods=['GET', 'POST'])
+def api_reconciliation():
+    """Run the consensus reconciliation pass and return the compliance report."""
+    with ENGINE_LOCK:
+        return jsonify(reconciler.reconcile())
 
 
 @app.route('/<path:filename>')

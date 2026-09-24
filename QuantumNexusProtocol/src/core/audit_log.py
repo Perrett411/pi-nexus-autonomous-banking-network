@@ -4,6 +4,7 @@ Tracks every transaction and consensus change as hash-chained entries,
 prevents duplicate records, and exposes a Merkle root so the audit
 trail itself can be verified.
 """
+import copy
 import hashlib
 import json
 import os
@@ -37,7 +38,10 @@ class QuantumAuditLog:
         return json.dumps(obj, sort_keys=True, separators=(',', ':'), default=str)
 
     def _append(self, entry_type, payload):
-        payload = dict(payload)  # content hash excludes the timestamp so duplicates match
+        # Deep-copy the payload so later in-place edits to the caller's
+        # objects (e.g. consensus auto-corrections) can never mutate the
+        # audit trail after it has been hash-chained.
+        payload = copy.deepcopy(payload)
         payload_hash = hashlib.sha256(self._canonical(payload).encode()).hexdigest()
         if payload_hash in self._payload_hashes:
             return None  # duplicate — do not record
