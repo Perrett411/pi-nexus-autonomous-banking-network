@@ -1,6 +1,7 @@
 import hashlib
 import time
 
+from contract_sandbox import safe_eval
 from transaction import Transaction
 
 
@@ -15,8 +16,17 @@ class Contract:
         if self.state.get(transaction.sender, 0) < transaction.amount:
             return False
 
-        # Execute the contract code
-        code_output = eval(self.code)
+        # Execute the contract code in a restricted sandbox — never eval()
+        # untrusted contract source in the host interpreter. Transaction
+        # fields are exposed as a dict so contract code needs no attribute
+        # access (e.g. transaction['amount']).
+        code_output = safe_eval(self.code, {
+            "transaction": {
+                "sender": transaction.sender,
+                "receiver": transaction.receiver,
+                "amount": transaction.amount,
+            }
+        })
 
         # Update the contract state
         self.state[transaction.receiver] = (
