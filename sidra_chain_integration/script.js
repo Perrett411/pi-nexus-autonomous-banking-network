@@ -28,7 +28,7 @@ creditScorePredictionButton.addEventListener('click', async (e) => {
     const mlModel = new MLModel('credit-score-prediction-model');
     const prediction = await mlModel.predict(creditScore);
 
-    creditScorePredictionResultDiv.innerHTML = `Predicted Credit Score: ${prediction}`;
+    creditScorePredictionResultDiv.textContent = `Predicted Credit Score: ${prediction}`;
 });
 
 loanRecommendationButton.addEventListener('click', async (e) => {
@@ -40,7 +40,7 @@ loanRecommendationButton.addEventListener('click', async (e) => {
     const recommendationEngine = new RecommendationEngine('loan-recommendation-engine');
     const recommendations = await recommendationEngine.getRecommendations(loanAmount, interestRate);
 
-    loanRecommendationResultDiv.innerHTML = `Recommended Loans: ${recommendations.join(', ')}`;
+    loanRecommendationResultDiv.textContent = `Recommended Loans: ${recommendations.join(', ')}`;
 });
 
 riskAssessmentButton.addEventListener('click', async (e) => {
@@ -53,5 +53,5 @@ riskAssessmentButton.addEventListener('click', async (e) => {
     const riskAssessmentModel = new RiskAssessmentModel('risk-assessment-model');
     const riskAssessment = await riskAssessmentModel.assessRisk(creditScore, loanAmount, interestRate);
 
-    riskAssessmentResultDiv.innerHTML = `Risk Assessment: ${riskAssessment}`;
+    riskAssessmentResultDiv.textContent = `Risk Assessment: ${riskAssessment}`;
 });

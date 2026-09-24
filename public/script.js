@@ -14,7 +14,7 @@ createAccountForm.addEventListener('submit', async (e) => {
     body: JSON.stringify({ userIdentity }),
   });
   const data = await response.json();
-  resultDiv.innerHTML = `Account created successfully! Account address: ${data.accountAddress}`;
+  resultDiv.textContent = `Account created successfully! Account address: ${data.accountAddress}`;
 });
 
 depositFundsForm.addEventListener('submit', async (e) => {
@@ -27,7 +27,7 @@ depositFundsForm.addEventListener('submit', async (e) => {
     body: JSON.stringify({ accountAddress, amount }),
   });
   const data = await response.json();
-  resultDiv.innerHTML = `Funds deposited successfully! New balance: ${data.balance}`;
+  resultDiv.textContent = `Funds deposited successfully! New balance: ${data.balance}`;
 });
 
 withdrawFundsForm.addEventListener('submit', async (e) => {
@@ -40,7 +40,7 @@ withdrawFundsForm.addEventListener('submit', async (e) => {
     body: JSON.stringify({ accountAddress, amount }),
   });
   const data = await response.json();
-  resultDiv.innerHTML = `Funds withdrawn successfully! New balance: ${data.balance}`;
+  resultDiv.textContent = `Funds withdrawn successfully! New balance: ${data.balance}`;
 });
 
 getBalanceForm.addEventListener('submit', async (e) => {
@@ -52,5 +52,5 @@ getBalanceForm.addEventListener('submit', async (e) => {
     body: JSON.stringify({ accountAddress }),
   });
   const data = await response.json();
-  resultDiv.innerHTML = `Account balance: ${data.balance}`;
+  resultDiv.textContent = `Account balance: ${data.balance}`;
 });

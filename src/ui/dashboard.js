@@ -37,27 +37,36 @@ class Dashboard {
     render() {
         const dashboardContainer = document.createElement('div');
         dashboardContainer.id = 'dashboard';
-        dashboardContainer.innerHTML = `
-            <h1>User Dashboard</h1>
-            <div id="account-balance"></div>
-            <h2>Transaction History</h2>
-            <ul id="transaction-history"></ul>
-        `;
+        const heading = document.createElement('h1');
+        heading.textContent = 'User Dashboard';
+        const balanceDiv = document.createElement('div');
+        balanceDiv.id = 'account-balance';
+        const historyHeading = document.createElement('h2');
+        historyHeading.textContent = 'Transaction History';
+        const historyList = document.createElement('ul');
+        historyList.id = 'transaction-history';
+        dashboardContainer.append(heading, balanceDiv, historyHeading, historyList);
         document.body.appendChild(dashboardContainer);
     }
 
     // Render account balance
     renderAccountBalance() {
         const balanceElement = document.getElementById('account-balance');
-        balanceElement.innerHTML = `<strong>Account Balance: $${this.accountBalance}</strong>`;
+        balanceElement.replaceChildren();
+        const strong = document.createElement('strong');
+        strong.textContent = `Account Balance: $${this.accountBalance}`;
+        balanceElement.appendChild(strong);
     }
 
     // Render transaction history
     renderTransactionHistory() {
         const historyElement = document.getElementById('transaction-history');
-        historyElement.innerHTML = this.transactionHistory.map(tx => `
-            <li>${tx.date}: $${tx.amount} (${tx.type})</li>
-        `).join('');
+        historyElement.replaceChildren();
+        this.transactionHistory.forEach(tx => {
+            const li = document.createElement('li');
+            li.textContent = `${tx.date}: $${tx.amount} (${tx.type})`;
+            historyElement.appendChild(li);
+        });
     }
 }
 

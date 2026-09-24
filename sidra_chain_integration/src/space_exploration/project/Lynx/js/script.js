@@ -23,7 +23,7 @@ form.addEventListener('submit', async (e) => {
 const clearButton = document.getElementById('clear-button');
 clearButton.addEventListener('click', () => {
     document.getElementById('data').value = '';
-    resultsDiv.innerHTML = '';
+    resultsDiv.replaceChildren();
 });
 
 // Add event listener to the example button

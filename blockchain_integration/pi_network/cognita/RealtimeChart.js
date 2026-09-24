@@ -17,7 +17,7 @@ class RealtimeChart {
 
   updateData(newData) {
     this.data = [...this.data, ...newData];
-    this.chartElement.innerHTML = '';
+    this.chartElement.replaceChildren();
     this.chartElement.appendChild(this.chart);
   }
 }

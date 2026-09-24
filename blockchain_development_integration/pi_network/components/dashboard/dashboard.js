@@ -25,15 +25,16 @@ function fetchData() {
 
 function displayData(data) {
     const dataContainer = document.getElementById('dataContainer');
-    dataContainer.innerHTML = ''; // Clear previous data
+    dataContainer.replaceChildren(); // Clear previous data
 
     data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `
-            <h2>${item.name}</h2>
-            <p>Status: ${item.status}</p>
-        `;
+        const title = document.createElement('h2');
+        title.textContent = item.name;
+        const status = document.createElement('p');
+        status.textContent = `Status: ${item.status}`;
+        card.append(title, status);
         dataContainer.appendChild(card);
     });
 }

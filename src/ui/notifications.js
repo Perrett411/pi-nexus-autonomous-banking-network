@@ -26,10 +26,11 @@ class Notifications {
     render() {
         const notificationContainer = document.createElement('div');
         notificationContainer.id = 'notifications';
-        notificationContainer.innerHTML = `
-            <h2>Notifications</h2>
-            <ul id="notification-list"></ul>
-        `;
+        const heading = document.createElement('h2');
+        heading.textContent = 'Notifications';
+        const notificationList = document.createElement('ul');
+        notificationList.id = 'notification-list';
+        notificationContainer.append(heading, notificationList);
         document.body.appendChild(notificationContainer);
     }
 

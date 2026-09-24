@@ -6,10 +6,10 @@ function castVote(vote) {
   const voteCount = votes.length;
   const voteAverage = votes.reduce((a, b) => a + b, 0) / voteCount;
   const voteStandardDeviation = Math.sqrt(votes.reduce((a, b) => a + Math.pow(b - voteAverage, 2), 0) / voteCount);
-  document.getElementById("vote-count").innerHTML = `${voteCount} votes cast`;
-  document.getElementById("pi-value").innerHTML = `$${piValue}`;
-  document.getElementById("vote-average").innerHTML = `Average vote: $${voteAverage.toFixed(2)}`;
-  document.getElementById("vote-standard-deviation").innerHTML = `Standard deviation: $${voteStandardDeviation.toFixed(2)}`;
+  document.getElementById("vote-count").textContent = `${voteCount} votes cast`;
+  document.getElementById("pi-value").textContent = `$${piValue}`;
+  document.getElementById("vote-average").textContent = `Average vote: $${voteAverage.toFixed(2)}`;
+  document.getElementById("vote-standard-deviation").textContent = `Standard deviation: $${voteStandardDeviation.toFixed(2)}`;
 }
 
 document.getElementById("vote-form").addEventListener("submit", (e) => {
