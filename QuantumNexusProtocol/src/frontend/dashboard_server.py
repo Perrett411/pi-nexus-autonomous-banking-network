@@ -19,6 +19,7 @@ from core.analytics import AuditAnalytics
 from core.audit_log import QuantumAuditLog
 from core.consensus import ConsensusAlgorithm
 from core.reconciliation import QuantumReconciler
+from core.stasis_field import QuantumStasisField
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,6 +30,7 @@ audit_log = QuantumAuditLog()
 engine = ConsensusAlgorithm(audit_log=audit_log)
 analytics = AuditAnalytics(audit_log)
 reconciler = QuantumReconciler(audit_log, engine)
+stasis_field = QuantumStasisField(audit_log)
 tx_pool = []  # transactions waiting to be proposed into a block
 
 PARTICIPANTS = ['alice', 'bob', 'carol', 'dave', 'eve', 'zara',
@@ -39,6 +41,11 @@ QUANTUM_CHANNELS = ['Q-PoS', 'Q-BFT', 'entangled-mesh', 'superposition']
 def _drive_tick():
     """One heartbeat of the quantum function drive."""
     global tx_pool
+    # Quantum entanglement sync: verify the sealed stasis field against the
+    # live tree, then re-seal it to the current root (drift = breach).
+    stasis_field.verify_integrity()
+    stasis_field.seal(log=False)
+
     action = random.random()
 
     if action < 0.55 or not engine.validators:
@@ -49,8 +56,18 @@ def _drive_tick():
             'amount': round(random.uniform(0.01, 999.99), 2),
             'quantum_channel': random.choice(QUANTUM_CHANNELS),
         }
-        audit_log.log_transaction(tx)
-        tx_pool.append(tx)
+        # Pre-emptive threat detection: no transaction enters the ledger
+        # (or the stasis field) before passing predictive QKD analysis.
+        accepted, _threat = stasis_field.scan_transaction(tx)
+        if accepted:
+            audit_log.log_transaction(tx)
+            tx_pool.append(tx)
+        if random.random() < 0.05:
+            # Simulated counterfeit mint: forges a coin reusing a real
+            # transaction id — predicted and neutralized pre-acceptance.
+            forged = dict(tx)
+            forged['id'] = tx['id']
+            stasis_field.scan_transaction(forged)
     elif action < 0.75:
         engine.register_validator(f"validator-{random.randint(1, 12)}",
                                   random.randint(10, 500))
@@ -80,6 +97,16 @@ def _seed_engine():
     if not engine.validators:
         for vid in ('genesis-validator', 'validator-1', 'validator-2'):
             engine.register_validator(vid, random.randint(100, 500))
+    if stasis_field.sealed_root is None:
+        stasis_field.seal()
+        # Sample identities protected inside the stasis vault — encrypted
+        # per owner; plaintext never leaves the field.
+        for owner in PARTICIPANTS[:4]:
+            stasis_field.store_identity(owner, {
+                'classification': 'QUANTUM-CITIZEN',
+                'clearance': 'authorized',
+                'profile': 'encrypted in stasis field',
+            })
 
 
 def _stats_locked():
@@ -130,6 +157,13 @@ def api_reconciliation():
     """Run the consensus reconciliation pass and return the compliance report."""
     with ENGINE_LOCK:
         return jsonify(reconciler.reconcile())
+
+
+@app.route('/api/stasis')
+def api_stasis():
+    """Quantum stasis field status: seal, integrity, privacy, threats."""
+    with ENGINE_LOCK:
+        return jsonify(stasis_field.status())
 
 
 @app.route('/<path:filename>')

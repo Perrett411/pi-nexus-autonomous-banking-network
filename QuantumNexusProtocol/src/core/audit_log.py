@@ -75,11 +75,12 @@ class QuantumAuditLog:
         return self._append('CONSENSUS_CHANGE',
                              {'change_type': change_type, 'details': details or {}})
 
-    def merkle_root(self):
-        """Merkle root over all entry hashes — publishable audit anchor."""
-        if not self.entries:
+    def merkle_root(self, upto=None):
+        """Merkle root over all (or the first `upto`) entry hashes."""
+        entries = self.entries if upto is None else self.entries[:upto]
+        if not entries:
             return hashlib.sha256(b'').hexdigest()
-        level = [bytes.fromhex(e['entry_hash']) for e in self.entries]
+        level = [bytes.fromhex(e['entry_hash']) for e in entries]
         while len(level) > 1:
             if len(level) % 2:
                 level.append(level[-1])
@@ -87,10 +88,10 @@ class QuantumAuditLog:
                      for i in range(0, len(level), 2)]
         return level[0].hex()
 
-    def verify_chain(self):
+    def verify_chain(self, upto=None):
         """Return True if every entry is intact and correctly linked."""
         prev_hash = '0' * 64
-        for entry in self.entries:
+        for entry in (self.entries if upto is None else self.entries[:upto]):
             content = {k: v for k, v in entry['payload'].items() if k != 'recorded_at'}
             if hashlib.sha256(self._canonical(content).encode()).hexdigest() != entry['payload_hash']:
                 return False  # payload was tampered with

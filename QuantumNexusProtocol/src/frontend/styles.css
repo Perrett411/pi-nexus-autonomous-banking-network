@@ -205,6 +205,69 @@ footer {
     border-top: 1px solid var(--border);
 }
 
+/* ---- quantum stasis field ---- */
+
+.stasis-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.stasis-panel > h2 {
+    margin: 0;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.stasis-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 16px 18px 8px;
+}
+
+.stasis-cell {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.stasis-cell .stat-value { font-size: 1.05rem; }
+
+.stat-value.warn { color: #fbbf24; }
+
+.stasis-sub {
+    margin: 10px 18px 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+}
+
+.stasis-threats {
+    padding: 0 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+@media (max-width: 900px) {
+    .stasis-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* ---- network analytics & reconciliation ---- */
 
 .analytics-panel, .reconcile-panel {

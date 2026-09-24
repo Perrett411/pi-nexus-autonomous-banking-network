@@ -42,6 +42,38 @@
             </div>
         </section>
 
+        <section class="stasis-panel" aria-label="Quantum stasis field">
+            <h2>Quantum Stasis Field</h2>
+            <div class="stasis-grid">
+                <div class="stasis-cell">
+                    <span class="stat-label">Field Status</span>
+                    <span class="stat-value" id="stasis-field">…</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Merkle Integrity</span>
+                    <span class="stat-value" id="stasis-integrity">…</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Identities Protected</span>
+                    <span class="stat-value" id="stasis-identities">0</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Identity Tree Root</span>
+                    <span class="stat-value mono" id="stasis-identity-root">…</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Threats Neutralized</span>
+                    <span class="stat-value" id="stasis-threats">0</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Threat Level</span>
+                    <span class="stat-value" id="stasis-level">…</span>
+                </div>
+            </div>
+            <h3 class="stasis-sub">Pre-Threat Detection — Predictive QKD</h3>
+            <div id="stasis-threats" class="stasis-threats"></div>
+        </section>
+
         <section class="analytics-panel" aria-label="Network analytics">
             <h2>Network Analytics</h2>
             <div class="analytics-grid">
@@ -85,5 +117,6 @@
     </footer>
     <script src="app.js"></script>
     <script src="analytics.js"></script>
+    <script src="stasis.js"></script>
 </body>
 </html>

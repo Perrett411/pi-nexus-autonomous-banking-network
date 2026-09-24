@@ -38,6 +38,18 @@ docker compose -f docker-compose.base44.yml up -d
   auto-correctable), verifies finalized block state (hash + linkage) and
   issues the compliance report. Repeat runs are idempotent — the audit log's
   payload dedup absorbs identical correction records.
+- `src/core/stasis_field.py` — `QuantumStasisField` (spec:
+  `stasis_field_protocol.json`): seals the audit Merkle root and re-verifies
+  the sealed prefix every heartbeat (appends allowed, alterations raise
+  `STASIS_FIELD_BREACH`); encrypts identities per owner (PBKDF2 + SHA-256
+  keystream) into a vault committed to an identity Merkle tree (owner key
+  required to open a record; denied attempts audited); and runs predictive
+  QKD threat analysis on every transaction BEFORE acceptance (`FALSE_COIN`
+  for replayed ids/invalid mints, `QKD_DISTURBANCE` for self-transfers/
+  low-entropy keys). The drive scans every tx through it and occasionally
+  forges a counterfeit to exercise detection.
+- API: `GET /api/stasis` returns the field status (seal, Merkle match,
+  privacy coverage, identity tree root, threat level + register).
 - `ConsensusAlgorithm.finalize_block` auto-corrects transactional violations
   in a block BEFORE validating/finalizing it (fixable errors corrected,
   policy violations flagged). Block hash is recomputed after corrections.
