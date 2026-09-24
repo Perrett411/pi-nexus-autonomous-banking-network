@@ -53,6 +53,39 @@ docker compose -f docker-compose.base44.yml up -d
 - `ConsensusAlgorithm.finalize_block` auto-corrects transactional violations
   in a block BEFORE validating/finalizing it (fixable errors corrected,
   policy violations flagged). Block hash is recomputed after corrections.
+- `src/core/enforcement.py` — `ZeroViolationEnforcement`: pre-acceptance policy
+  gate. Every transaction is screened (via `inspect_transaction`) BEFORE the
+  ledger; violations are quarantined with reason codes (audit entry
+  `VIOLATION_STOPPED`) and never enter the chain. `accepted_violations` is
+  structurally 0 while active — reported as the FTC Act §5 control. The drive
+  occasionally injects a deliberate self-transfer to prove the gate stops it.
+- `src/core/health_monitor.py` — `QuantumHealthMonitor`: probes every consensus
+  function every 5 drive ticks (validators, propose/validate/finalize block,
+  slashing, block reconciliation, audit chain, Merkle root, stasis field),
+  tracking latency/failure streaks per check. Alerts (auto-clearing, history
+  kept) are raised for any failed check and — critically —
+  `BLOCK_RECONCILIATION_FAILED` / `AUDIT_CHAIN_BROKEN` when a reconciliation
+  pass fails (the drive feeds every 20-tick reconciliation report into
+  `observe_reconciliation`). The `VIOLATION_DETECTED` warning only fires on
+  NEW violations vs the previous pass, so legacy pre-enforcement entries in the
+  immutable ledger don't keep a stale alert alive.
+- `src/core/compliance.py` — `ComplianceEngine`: maps live controls onto 7 legal
+  frameworks (PSD2, GDPR/CCPA, ECOA/Reg B, FHA, CRA, FTC Act §5, SOX §404),
+  each verified against live state on request. Fairness monitor applies the
+  four-fifths (80%) inclusion rule vs the MEDIAN participant over the last 200
+  transactions (median benchmark = robust to sampling noise, still catches
+  systematic redlining). Also serves the RIGHTS_CHARTER (business / person /
+  ethical standards).
+- `src/core/negotiation.py` — `NegotiationLedger`: rights-preserving dispute
+  flow. Quarantined items are disputable; structured offers (`release_refund`,
+  `resubmit_clean`) settle, `escalate` goes to human review. Every transition
+  is audit-logged. Disputing never affects standing.
+- Health view: `GET /health` serves `health.html` + `health.js` (dedicated
+  monitoring view; polls `/api/health` every 2s and `/api/compliance` every
+  6s). API: `GET /api/health` (overall verdict, per-function checks, alerts,
+  enforcement status incl. quarantine), `GET /api/compliance` (frameworks,
+  fairness, rights, negotiation register), `GET|POST /api/negotiation`
+  (`{action: open|propose, ...}`). Both dashboard pages share a `view-nav`.
 - API: `GET /api/events?after=<index>` returns audit stats plus entries after
   the given index (last 200 when `after=-1`). The dashboard polls this every
   1.5s. `GET /api/analytics` returns chart series + anomalies (polled every

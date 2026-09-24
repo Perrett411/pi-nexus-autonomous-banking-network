@@ -474,3 +474,312 @@ footer {
     .anomaly-panel { border-left: none; border-top: 1px solid var(--border); }
     .report-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ---- health monitor view ---- */
+
+.view-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.nav-link {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 7px 14px;
+}
+
+.nav-link.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(110, 231, 255, 0.1);
+}
+
+.alerts-banner {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid var(--bad);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alerts-banner h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bad);
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+}
+
+.alert-msg { flex: 1; min-width: 0; }
+
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+    padding: 16px 18px;
+}
+
+.check-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ok);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.check-card.warn { border-left-color: #fbbf24; }
+.check-card.bad { border-left-color: var(--bad); }
+
+.check-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.check-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.check-detail { font-size: 0.76rem; color: var(--muted); }
+
+.status-chip {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.status-chip.ok { background: rgba(74, 222, 128, 0.15); color: var(--ok); }
+.status-chip.warn { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.status-chip.bad { background: rgba(248, 113, 113, 0.15); color: var(--bad); }
+
+.chip.fail {
+    background: rgba(248, 113, 113, 0.14);
+    color: var(--bad);
+}
+
+.ev-grid { grid-template-columns: repeat(4, 1fr); }
+
+.q-list, .fw-list, .dispute-list {
+    padding: 0 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.q-item {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--bad);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.q-item.none { color: var(--muted); border-style: dashed; border-left-color: var(--border); font-size: 0.8rem; }
+
+.mini-btn {
+    background: rgba(110, 231, 255, 0.14);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mini-btn:hover { background: rgba(110, 231, 255, 0.25); }
+
+.compliance-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 6px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+}
+
+.fw-item {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.fw-jurisdiction {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-2);
+}
+
+#fairness-panel {
+    padding: 0 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fairness-bars { display: flex; flex-direction: column; gap: 6px; }
+
+.fairness-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+}
+
+.fb-label {
+    width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--muted);
+}
+
+.fb-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(143, 155, 199, 0.15);
+    overflow: hidden;
+}
+
+.fb-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--ok);
+    transition: width 0.4s ease;
+}
+
+.fb-fill.low { background: var(--bad); }
+
+.fb-count { width: 30px; text-align: right; color: var(--muted); }
+
+.finding {
+    font-size: 0.78rem;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px dashed #fbbf24;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.rights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    padding: 0 18px 18px;
+}
+
+.rights-col {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.rights-title {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+}
+
+.right-item {
+    font-size: 0.76rem;
+    color: var(--muted);
+    padding: 4px 0 4px 16px;
+    position: relative;
+}
+
+.right-item::before {
+    content: '§';
+    position: absolute;
+    left: 0;
+    color: var(--accent-2);
+}
+
+.standing-offer {
+    margin: 14px 18px 0;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: rgba(110, 231, 255, 0.07);
+    border: 1px dashed var(--accent);
+    border-radius: 10px;
+}
+
+.dispute-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid #fbbf24;
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dispute-card.resolved { border-left-color: var(--ok); }
+.dispute-card.escalated { border-left-color: var(--bad); }
+
+.resolution {
+    font-size: 0.78rem;
+    color: var(--ok);
+    background: rgba(74, 222, 128, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.dispute-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+    .ev-grid { grid-template-columns: repeat(2, 1fr); }
+}

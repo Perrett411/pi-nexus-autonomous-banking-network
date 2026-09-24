@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Health Monitor — Pi-Nexus</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Health Monitor</h1>
+        <div class="live-badge">
+            <span class="dot" id="live-dot"></span>
+            <span id="live-status">CONNECTING</span>
+        </div>
+    </header>
+    <main>
+        <nav class="view-nav" aria-label="Views">
+            <a class="nav-link" href="/">Function Drive</a>
+            <a class="nav-link active" href="/health" aria-current="page">Health Monitor</a>
+        </nav>
+
+        <div id="alerts-banner" class="alerts-banner" hidden></div>
+
+        <section class="stats-grid" aria-label="Health statistics">
+            <div class="stat-card">
+                <span class="stat-label">Overall Health</span>
+                <span class="stat-value" id="hm-overall">…</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Active Alerts</span>
+                <span class="stat-value" id="hm-alerts">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Checks Passing</span>
+                <span class="stat-value" id="hm-checks">…</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Violations Stopped</span>
+                <span class="stat-value ok" id="hm-blocked">0</span>
+            </div>
+            <div class="stat-card wide">
+                <span class="stat-label">Last Block Reconciliation</span>
+                <span class="stat-value" id="hm-reconciliation">waiting for first pass…</span>
+            </div>
+        </section>
+
+        <section class="stasis-panel" aria-label="Quantum consensus function health">
+            <h2>Quantum Consensus Functions — Live Checks</h2>
+            <div id="function-health" class="health-grid"></div>
+        </section>
+
+        <section class="stasis-panel" aria-label="Zero-violation enforcement">
+            <h2>Zero-Violation Enforcement</h2>
+            <div class="stasis-grid ev-grid">
+                <div class="stasis-cell">
+                    <span class="stat-label">Gate</span>
+                    <span class="stat-value" id="ev-mode">…</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Screened</span>
+                    <span class="stat-value" id="ev-screened">0</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Stopped Pre-Acceptance</span>
+                    <span class="stat-value" id="ev-stopped">0</span>
+                </div>
+                <div class="stasis-cell">
+                    <span class="stat-label">Accepted Violations</span>
+                    <span class="stat-value" id="ev-accepted">0</span>
+                </div>
+            </div>
+            <h3 class="stasis-sub">Quarantine Register — every entry carries reason codes &amp; is disputable</h3>
+            <div id="quarantine-list" class="q-list"></div>
+        </section>
+
+        <section class="stasis-panel" aria-label="Legal compliance and rights">
+            <h2>Legal Compliance &amp; Rights</h2>
+            <div class="compliance-head">
+                <span>Framework status</span>
+                <span id="compliance-verdict" class="report-status ok">…</span>
+            </div>
+            <div id="framework-list" class="fw-list"></div>
+            <h3 class="stasis-sub">Anti-Discrimination &amp; Redlining Monitor</h3>
+            <div id="fairness-panel"></div>
+            <h3 class="stasis-sub">Rights Charter — as a business &amp; as a person</h3>
+            <div id="rights-panel" class="rights-grid"></div>
+        </section>
+
+        <section class="stasis-panel" aria-label="Negotiation and dispute resolution">
+            <h2>Negotiation &amp; Dispute Resolution</h2>
+            <p id="negotiation-note" class="standing-offer"></p>
+            <div id="dispute-list" class="dispute-list"></div>
+        </section>
+    </main>
+    <footer>
+        <p>Consensus functions are probed continuously. Block reconciliation failures, chain breaks and stasis breaches raise alerts here instantly.</p>
+    </footer>
+    <script src="health.js"></script>
+</body>
+</html>

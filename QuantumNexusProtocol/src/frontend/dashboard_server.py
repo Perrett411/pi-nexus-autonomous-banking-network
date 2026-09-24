@@ -17,7 +17,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.analytics import AuditAnalytics
 from core.audit_log import QuantumAuditLog
+from core.compliance import ComplianceEngine
 from core.consensus import ConsensusAlgorithm
+from core.enforcement import ZeroViolationEnforcement
+from core.health_monitor import QuantumHealthMonitor
+from core.negotiation import NegotiationLedger
 from core.reconciliation import QuantumReconciler
 from core.stasis_field import QuantumStasisField
 
@@ -31,6 +35,10 @@ engine = ConsensusAlgorithm(audit_log=audit_log)
 analytics = AuditAnalytics(audit_log)
 reconciler = QuantumReconciler(audit_log, engine)
 stasis_field = QuantumStasisField(audit_log)
+enforcement = ZeroViolationEnforcement(audit_log)
+health_monitor = QuantumHealthMonitor(audit_log, engine, reconciler, stasis_field)
+compliance = ComplianceEngine(audit_log, enforcement, stasis_field, health_monitor)
+negotiation = NegotiationLedger(audit_log)
 tx_pool = []  # transactions waiting to be proposed into a block
 
 PARTICIPANTS = ['alice', 'bob', 'carol', 'dave', 'eve', 'zara',
@@ -56,18 +64,29 @@ def _drive_tick():
             'amount': round(random.uniform(0.01, 999.99), 2),
             'quantum_channel': random.choice(QUANTUM_CHANNELS),
         }
-        # Pre-emptive threat detection: no transaction enters the ledger
-        # (or the stasis field) before passing predictive QKD analysis.
-        accepted, _threat = stasis_field.scan_transaction(tx)
-        if accepted:
-            audit_log.log_transaction(tx)
-            tx_pool.append(tx)
+        # Zero-violation enforcement: the policy gate runs BEFORE the
+        # ledger — violating transactions are quarantined with reason
+        # codes and never enter the audit trail or block pool.
+        allowed, _reasons = enforcement.screen(tx)
+        if allowed:
+            # Pre-emptive threat detection: no transaction enters the ledger
+            # (or the stasis field) before passing predictive QKD analysis.
+            accepted, _threat = stasis_field.scan_transaction(tx)
+            if accepted:
+                audit_log.log_transaction(tx)
+                tx_pool.append(tx)
         if random.random() < 0.05:
             # Simulated counterfeit mint: forges a coin reusing a real
             # transaction id — predicted and neutralized pre-acceptance.
             forged = dict(tx)
             forged['id'] = tx['id']
             stasis_field.scan_transaction(forged)
+        if random.random() < 0.06:
+            # Simulated policy-violation attempt (self-transfer): proves the
+            # enforcement gate stops it pre-acceptance, every time.
+            violating = dict(tx)
+            violating['sender'] = violating['recipient']
+            enforcement.screen(violating)
     elif action < 0.75:
         engine.register_validator(f"validator-{random.randint(1, 12)}",
                                   random.randint(10, 500))
@@ -88,8 +107,13 @@ def _run_drive():
         with ENGINE_LOCK:
             _drive_tick()
             ticks += 1
-            if ticks % 20 == 0:  # periodic compliance pass — auto-reconcile
-                reconciler.reconcile()
+            # Continuous health monitoring: probe every consensus function.
+            if ticks % 5 == 0:
+                health_monitor.run_checks()
+            # Periodic compliance pass — auto-reconcile; a failed block
+            # reconciliation raises a critical health alert.
+            if ticks % 20 == 0:
+                health_monitor.observe_reconciliation(reconciler.reconcile())
         time.sleep(random.uniform(1.0, 2.5))
 
 
@@ -164,6 +188,57 @@ def api_stasis():
     """Quantum stasis field status: seal, integrity, privacy, threats."""
     with ENGINE_LOCK:
         return jsonify(stasis_field.status())
+
+
+@app.route('/health')
+def health_page():
+    """Dedicated health monitoring view."""
+    return send_from_directory(APP_DIR, 'health.html')
+
+
+@app.route('/api/health')
+def api_health():
+    """Live health of every quantum consensus function, active alerts,
+    and the zero-violation enforcement gate status."""
+    with ENGINE_LOCK:
+        report = health_monitor.status()
+        report['enforcement'] = enforcement.status()
+        return jsonify(report)
+
+
+@app.route('/api/compliance')
+def api_compliance():
+    """Legal compliance frameworks, rights charter, anti-redlining
+    fairness monitor, and the negotiation/dispute register."""
+    with ENGINE_LOCK:
+        report = compliance.status(PARTICIPANTS)
+        report['negotiation'] = negotiation.status()
+        return jsonify(report)
+
+
+@app.route('/api/negotiation', methods=['GET', 'POST'])
+def api_negotiation():
+    """Structured dispute resolution: open a dispute on a quarantined
+    item, settle with a structured offer, or escalate to human review."""
+    with ENGINE_LOCK:
+        if request.method == 'POST':
+            data = request.get_json(silent=True) or {}
+            action = data.get('action')
+            try:
+                if action == 'open':
+                    negotiation.open_dispute(data.get('party'),
+                                              data.get('subject_id'),
+                                              data.get('subject_type',
+                                                       'QUARANTINED_TRANSACTION'),
+                                              data.get('claim', ''))
+                elif action == 'propose':
+                    negotiation.propose(data.get('dispute_id'),
+                                        data.get('offer'))
+                else:
+                    return jsonify({'error': 'unknown action'}), 400
+            except (ValueError, KeyError) as exc:
+                return jsonify({'error': str(exc)}), 400
+        return jsonify(negotiation.status())
 
 
 @app.route('/<path:filename>')
