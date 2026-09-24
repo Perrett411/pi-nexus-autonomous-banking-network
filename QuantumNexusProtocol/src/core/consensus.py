@@ -15,25 +15,36 @@ class Block:
         return hashlib.sha256(block_string).hexdigest()
 
 class ConsensusAlgorithm:
-    def __init__(self):
+    def __init__(self, audit_log=None):
         self.validators = {}
         self.current_block = None
         self.pending_transactions = []
         self.validator_rewards = defaultdict(int)
         self.slashing_conditions = {}
+        self.audit_log = audit_log
+
+    def _audit_consensus(self, change_type, details=None):
+        if self.audit_log:
+            self.audit_log.log_consensus_change(change_type, details)
 
     def register_validator(self, validator_id, stake):
         self.validators[validator_id] = stake
+        self._audit_consensus('VALIDATOR_REGISTERED', {'validator_id': validator_id, 'stake': stake})
 
     def propose_block(self, transactions):
         if not self.validators:
             raise Exception("No validators registered.")
-        
+
         self.current_block = Block(
             index=len(self.pending_transactions) + 1,
             previous_hash=self.get_last_block_hash(),
             transactions=transactions
         )
+        if self.audit_log:
+            for tx in transactions:
+                self.audit_log.log_transaction(tx)
+        self._audit_consensus('BLOCK_PROPOSED', {'block_index': self.current_block.index,
+                                                 'block_hash': self.current_block.hash})
         return self.current_block
 
     def validate_block(self, block):
@@ -48,6 +59,8 @@ class ConsensusAlgorithm:
         if self.validate_block(block):
             self.pending_transactions.append(block)
             self.reward_validators(block)
+            self._audit_consensus('BLOCK_FINALIZED', {'block_index': block.index,
+                                                     'block_hash': block.hash})
             return True
         return False
 
@@ -63,15 +76,19 @@ class ConsensusAlgorithm:
         # Implement logic to handle forks in the blockchain
         if len(competing_chain) > len(self.pending_transactions):
             self.pending_transactions = competing_chain
+            self._audit_consensus('FORK_RESOLVED', {'new_chain_length': len(competing_chain)})
 
     def slash_validator(self, validator_id):
         # Implement slashing conditions for malicious behavior
         if validator_id in self.slashing_conditions:
             # Deduct stake or impose penalties
             self.validators[validator_id] = max(0, self.validators[validator_id] - self.slashing_conditions[validator_id])
+            self._audit_consensus('VALIDATOR_SLASHED', {'validator_id': validator_id,
+                                                        'remaining_stake': self.validators[validator_id]})
 
     def set_slashing_condition(self, validator_id, penalty):
         self.slashing_conditions[validator_id] = penalty
+        self._audit_consensus('SLASHING_CONDITION_SET', {'validator_id': validator_id, 'penalty': penalty})
 
     def get_validator_rewards(self):
         return self.validator_rewards
