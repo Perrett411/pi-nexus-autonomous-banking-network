@@ -40,12 +40,29 @@ async function renderMarketplace() {
   assets.forEach((asset) => {
     const assetCard = document.createElement('div');
     assetCard.className = 'asset-card';
-    assetCard.innerHTML = `
-      <img src="${asset.image}" alt="${asset.name}">
-      <h3>${asset.name}</h3>
-      <p>${asset.description}</p>
-      <button class="buy-btn">Buy</button>
-    `;
+
+    // Only allow http/https image URLs to avoid javascript: or data: payloads
+    const imageUrl = String(asset.image || '');
+    const img = document.createElement('img');
+    if (/^https?:\/\//i.test(imageUrl)) {
+      img.src = imageUrl;
+    }
+    img.alt = String(asset.name || '');
+
+    const nameEl = document.createElement('h3');
+    nameEl.textContent = String(asset.name || '');
+
+    const descEl = document.createElement('p');
+    descEl.textContent = String(asset.description || '');
+
+    const buyBtn = document.createElement('button');
+    buyBtn.className = 'buy-btn';
+    buyBtn.textContent = 'Buy';
+
+    assetCard.appendChild(img);
+    assetCard.appendChild(nameEl);
+    assetCard.appendChild(descEl);
+    assetCard.appendChild(buyBtn);
     marketplaceGrid.appendChild(assetCard);
   });
 }

@@ -84,12 +84,18 @@
       ordersList.innerHTML = '';
       orders.forEach((order) => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${order.id}</td>
-          <td>${order.amount}</td>
-          <td>${order.price}</td>
-          <td>${order.side === 0? 'Buy' : 'Sell'}</td>
-        `;
+        const idCell = document.createElement('td');
+        idCell.textContent = String(order.id);
+        const amountCell = document.createElement('td');
+        amountCell.textContent = String(order.amount);
+        const priceCell = document.createElement('td');
+        priceCell.textContent = String(order.price);
+        const sideCell = document.createElement('td');
+        sideCell.textContent = order.side === 0 ? 'Buy' : 'Sell';
+        row.appendChild(idCell);
+        row.appendChild(amountCell);
+        row.appendChild(priceCell);
+        row.appendChild(sideCell);
         ordersList.appendChild(row);
       });
     }
