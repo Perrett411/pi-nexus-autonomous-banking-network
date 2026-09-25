@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const NexusBridge = require('./nexusBridge');
+const { ParallelNexusDataFeed } = require('./parallelDataFeed');
 
 const wss = new WebSocket.Server({ port: 8080 });
 
@@ -24,9 +24,10 @@ const start = () => {
 
     console.log('WebSocket server is running on ws://localhost:8080');
 
-    // Instantiate and start the real-time bidirectional data channel bridge
-    const nexusBridge = new NexusBridge();
-    nexusBridge.start();
+    // Instantiate and start the QCF-driven parallel/mirror data feed channels
+    // (nexus-x-aibank.com <-> nexus-x-aibank-crypto.base44.app)
+    const parallelFeed = new ParallelNexusDataFeed();
+    parallelFeed.start();
 };
 
 module.exports = { start };

@@ -1,12 +1,13 @@
 /**
  * nexusBridge.js
  * 
- * Establishes real-time, bidirectional data synchronization between:
- * - https://postman-echo.com (Primary AI Bank Network Mock Gateway)
- * - https://ws.postman-echo.com (Crypto AI Bank Network Mock Gateway)
+ * Establishes real-time, bidirectional, QCF-driven data synchronization between:
+ * - https://nexus-x-aibank.com (Primary AI Bank Network)
+ * - https://nexus-x-aibank-crypto.base44.app (Crypto AI Bank Network)
  * 
  * Supports robust connection management, heartbeats, message queuing/buffering, 
- * exponential backoff reconnection, and REST-based fallback synchronization.
+ * exponential backoff reconnection, REST-based fallback synchronization, and
+ * QCF-driven scheduled reconciliation sync.
  */
 
 const WebSocket = require('ws');
@@ -14,11 +15,16 @@ const axios = require('axios');
 
 class NexusBridge {
     constructor(config = {}) {
-        this.primaryWsUrl = config.primaryWsUrl || 'wss://ws.postman-echo.com/raw';
-        this.cryptoWsUrl = config.cryptoWsUrl || 'wss://echo.websocket.org';
-        
-        this.primaryHttpUrl = config.primaryHttpUrl || 'https://postman-echo.com/get';
-        this.cryptoHttpUrl = config.cryptoHttpUrl || 'https://postman-echo.com/post';
+        // QCF-driven data feed endpoints between nexus-x-aibank.com (Primary AI Bank)
+        // and nexus-x-aibank-crypto.base44.app (Crypto AI Bank). Override via environment.
+        this.primaryWsUrl = config.primaryWsUrl || process.env.NEXUS_PRIMARY_WS_URL || 'wss://nexus-x-aibank.com';
+        this.cryptoWsUrl = config.cryptoWsUrl || process.env.NEXUS_CRYPTO_WS_URL || 'wss://nexus-x-aibank-crypto.base44.app';
+
+        this.primaryHttpUrl = config.primaryHttpUrl || process.env.NEXUS_PRIMARY_HTTP_URL || 'https://nexus-x-aibank.com/api/data-feed';
+        this.cryptoHttpUrl = config.cryptoHttpUrl || process.env.NEXUS_CRYPTO_HTTP_URL || 'https://nexus-x-aibank-crypto.base44.app/api/data-feed';
+
+        // Parallel/mirror channel identifier (e.g. "A" primary channel, "B" mirror channel)
+        this.channelId = config.channelId || 'A';
 
         this.primaryWs = null;
         this.cryptoWs = null;
@@ -35,6 +41,13 @@ class NexusBridge {
         this.pollTimer = null;
         this.heartbeatInterval = config.heartbeatInterval || 30000; // 30 seconds
         this.heartbeatTimer = null;
+
+        // QCF-driven scheduled reconciliation sync (runs regardless of WebSocket state)
+        this.scheduledSyncInterval = config.scheduledSyncInterval || 60000; // 60 seconds
+        this.syncStartDelay = config.syncStartDelay || 0; // stagger mirror channels
+        this.syncTimer = null;
+        this.syncOffsetTimer = null;
+        this.lastSync = { primaryToCrypto: null, cryptoToPrimary: null };
 
         this.isStarted = false;
     }
@@ -56,6 +69,7 @@ class NexusBridge {
 
         this.startHeartbeat();
         this.startFallbackPoll();
+        this.startScheduledSync();
     }
 
     /**
@@ -263,6 +277,34 @@ class NexusBridge {
     }
 
     /**
+     * QCF-driven scheduled reconciliation: periodically mirror data between both
+     * networks via REST regardless of WebSocket state, keeping the parallel
+     * copies of banking and crypto data accurate.
+     */
+    startScheduledSync() {
+        const runSync = async () => {
+            if (!this.isStarted) return;
+            console.log(`[NexusBridge:${this.channelId}] Running scheduled reconciliation sync...`);
+            try {
+                await this.syncRESTChannels();
+            } catch (err) {
+                console.error(`[NexusBridge:${this.channelId}] Scheduled sync failed:`, err.message);
+            }
+        };
+
+        if (this.syncStartDelay > 0) {
+            // Mirror channel: wait out the offset, sync once, then continue on schedule
+            this.syncOffsetTimer = setTimeout(() => {
+                if (!this.isStarted) return;
+                runSync();
+                this.syncTimer = setInterval(runSync, this.scheduledSyncInterval);
+            }, this.syncStartDelay);
+        } else {
+            this.syncTimer = setInterval(runSync, this.scheduledSyncInterval);
+        }
+    }
+
+    /**
      * Sync data between HTTP endpoints as fallback.
      */
     async syncRESTChannels() {
@@ -275,6 +317,7 @@ class NexusBridge {
                 await Promise.all(updates.map(update => 
                     axios.post(this.cryptoHttpUrl, update, { timeout: 3000 })
                 ));
+                this.lastSync.primaryToCrypto = new Date().toISOString();
             }
         } catch (err) {
             console.warn('[NexusBridge REST] Primary -> Crypto HTTP Sync skipped or failed:', err.message);
@@ -289,6 +332,7 @@ class NexusBridge {
                 await Promise.all(updates.map(update => 
                     axios.post(this.primaryHttpUrl, update, { timeout: 3000 })
                 ));
+                this.lastSync.cryptoToPrimary = new Date().toISOString();
             }
         } catch (err) {
             console.warn('[NexusBridge REST] Crypto -> Primary HTTP Sync skipped or failed:', err.message);
@@ -304,6 +348,8 @@ class NexusBridge {
 
         if (this.pollTimer) clearInterval(this.pollTimer);
         if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+        if (this.syncTimer) clearInterval(this.syncTimer);
+        if (this.syncOffsetTimer) clearTimeout(this.syncOffsetTimer);
 
         if (this.primaryWs) {
             try {
