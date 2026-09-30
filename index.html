@@ -231,38 +231,48 @@
     <section id="services" class="py-16 bg-gray-800">
         <div class="container mx-auto text-center">
             <h2 class="text-3xl md:text-4xl font-bold neon-text">Services</h2>
+            <p class="mt-2 text-gray-400">Click a service to try it live — every action is validated by the QCF-DRIVE quantum consensus engine.</p>
             <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="p-6 bg-gray-700 rounded-lg neon-border">
+                <div data-panel-target="panel-analytics" class="p-6 bg-gray-700 rounded-lg neon-border">
                     <i class="fas fa-chart-line text-4xl neon-text"></i>
                     <h3 class="mt-4 text-xl font-semibold">Real-Time Analytics</h3>
                     <p class="mt-2">Get real-time insights and analytics to make informed decisions.</p>
                 </div>
-                <div class="p-6 bg-gray-700 rounded-lg neon-border">
+                <div data-panel-target="panel-security" class="p-6 bg-gray-700 rounded-lg neon-border">
                     <i class="fas fa-shield-alt text-4xl neon-text"></i>
                     <h3 class="mt-4 text-xl font-semibold">Enhanced Security</h3>
                     <p class="mt-2">Our system ensures your data and transactions are always secure.</p>
                 </div>
-                <div class="p-6 bg-gray-700 rounded-lg neon-border">
+                <div data-panel-target="panel-integrations" class="p-6 bg-gray-700 rounded-lg neon-border">
                     <i class="fas fa-sync-alt text-4xl neon-text"></i>
                     <h3 class="mt-4 text-xl font-semibold">Seamless Integration</h3>
                     <p class="mt-2">Easily integrate with existing systems and platforms.</p>
                 </div>
-                <div class="p-6 bg-gray-700 rounded-lg neon-border">
+                <div data-panel-target="panel-automation" class="p-6 bg-gray-700 rounded-lg neon-border">
                     <i class="fas fa-cogs text-4xl neon-text"></i>
                     <h3 class="mt-4 text-xl font-semibold">Automated Processes</h3>
                     <p class="mt-2">Automate routine processes to increase efficiency and reduce errors.</p>
                 </div>
-                <div class="p-6 bg-gray-700 rounded-lg neon-border">
+                <div data-panel-target="panel-privacy" class="p-6 bg-gray-700 rounded-lg neon-border">
                     <i class="fas fa-user-shield text-4xl neon-text"></i>
                     <h3 class="mt-4 text-xl font-semibold">User Privacy</h3>
                     <p class="mt-2">We prioritize user privacy with strict data protection policies.</p>
                 </div>
-                <div class="p-6 bg-gray-700 rounded-lg neon-border">
+                <div data-panel-target="panel-support" class="p-6 bg-gray-700 rounded-lg neon-border">
                     <i class="fas fa-headset text-4xl neon-text"></i>
                     <h3 class="mt-4 text-xl font-semibold">24/7 Customer Support</h3>
                     <p class="mt-2">Get round-the-clock support from our dedicated customer service team.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Services Dashboard -->
+    <section id="services-dashboard" class="py-16 bg-gray-900">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold neon-text text-center">Live Services Dashboard</h2>
+            <p class="mt-2 text-center text-gray-400">Working features, each connected to the quantum consensus function.</p>
+            <div id="dashboard-panels" class="mt-10 space-y-10"></div>
         </div>
     </section>
 
@@ -287,6 +297,7 @@
         <p>&copy; 2024 Pi Nexus Autonomous Banking Network. All rights reserved.</p>
     </footer>
 
+    <script src="services-dashboard.js"></script>
     <script>
         // Smooth scroll for nav links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
