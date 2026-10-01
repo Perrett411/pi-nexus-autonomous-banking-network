@@ -20,7 +20,17 @@ class BankingPlatform {
     return { account, walletAddress };
   }
 
-  // ... other methods ...
+  async depositFunds(accountAddress, amount) {
+    return { accountAddress, amount, message: 'Funds deposited successfully' };
+  }
+
+  async withdrawFunds(accountAddress, amount) {
+    return { accountAddress, amount, message: 'Funds withdrawn successfully' };
+  }
+
+  async getBalance(accountAddress) {
+    return { balance: 0 };
+  }
 }
 
 module.exports = BankingPlatform;

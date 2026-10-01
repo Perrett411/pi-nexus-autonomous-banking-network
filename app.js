@@ -6,6 +6,8 @@ const BankingPlatform = require('./blockchain_integration/banking_platform');
 
 const bankingPlatform = new BankingPlatform();
 
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -34,6 +36,11 @@ app.get('/get-balance', async (req, res) => {
   const accountAddress = req.query.account_address;
   const balance = await bankingPlatform.getBalance(accountAddress);
   res.json({ balance });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 module.exports = app;
