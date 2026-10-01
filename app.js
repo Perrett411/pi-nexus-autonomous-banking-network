@@ -1,9 +1,14 @@
 // app.js
 const express = require('express');
+const path = require('path');
 const app = express();
 const BankingPlatform = require('./blockchain_integration/banking_platform');
 
 const bankingPlatform = new BankingPlatform();
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/create-account', async (req, res) => {
   const userIdentity = req.body.user_identity;

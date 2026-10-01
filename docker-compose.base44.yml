@@ -1,0 +1,26 @@
+services:
+  app:
+    image: node:22-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    # Install from the lockfile on startup, then run the Express server with
+    # nodemon live-reload. app.js self-starts only when run directly
+    # (require.main === module), so it must be the entry point — not index.js.
+    command: ["sh", "-ec", "npm ci && exec npx nodemon app.js"]
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    restart: on-failure
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://localhost:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
